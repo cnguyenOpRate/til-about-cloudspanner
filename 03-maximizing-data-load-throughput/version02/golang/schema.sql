@@ -17,6 +17,7 @@
 CREATE TABLE tbl_mc_exceptions (
 
     exc_id STRING(32) NOT NULL,
+    OldID INT64,
 
     i_platform_id INT64,
 

@@ -33,8 +33,8 @@ func generateExceptionLogs(gcs *GCSclient, wg *sync.WaitGroup) {
 			log.Printf("Generated %v Exception logs of %v ...", i, *numExceptionLogs)
 		}
 	}
-	go gcs.writeCSV(wg, *bucketName, *folderPath, "exceptionlogs", *numAccounts/recordsPerFile, accs)
-	log.Printf("Generated %v Accounts of %v ...", *numAccounts, *numAccounts)
+	go gcs.writeCSV(wg, *bucketName, *folderPath, "exceptionlogs", *numExceptionLogs/recordsPerFile, accs)
+	log.Printf("Generated %v Exception logs of %v ...", *numExceptionLogs, *numExceptionLogs)
 }
 
 func generateAccounts(gcs *GCSclient, wg *sync.WaitGroup) {

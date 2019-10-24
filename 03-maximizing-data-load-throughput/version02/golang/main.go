@@ -264,9 +264,9 @@ func persistObjects(wgs map[string]*sync.WaitGroup, group string, readersCh chan
 				processFunction: func(j *processJob, chs []chan map[string]*spanner.Mutation) error {
 					gocsv.UnmarshalBytesToCallback(j.files[j.mapping["exceptionlogs"]], func(a *dbExceptionLogs) error {
 						id := uuid.New()
-						a.exc_id = string(encodeHexUUID(&id))
+						a.ExecID = string(encodeHexUUID(&id))
 						j.lookup["exceptionlogs"][a.OldID] = &id
-						return appendMutation(chs[0], "ExceptionLogs", a.exc_id, a)
+						return appendMutation(chs[0], "ExceptionLogs", a.ExecID, a)
 					})
 					j.wgs["ExceptionLogs"].Done()
 					return nil

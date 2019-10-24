@@ -49,6 +49,7 @@ var (
 	}()
 
 	tables = []string{
+		"tbl_mc_exceptions",
 		"Account",
 		"Order",
 		"OrderLineItem",
@@ -78,23 +79,23 @@ func (b *blobField) UnmarshalCSV(csv string) (err error) {
 }
 
 type dbExceptionLogs struct {
-	exc_id          string `spanner:"exc_id" csv:"-"`
-	OldID           int64  `spanner:"OldID" csv:"exc_id"`
-	i_platform_id   int64  `spanner:"i_platform_id" csv:"i_platform_id"`
-	i_affiliate_id  int64  `spanner:"i_affiliate_id" csv:"i_affiliate_id"`
-	i_advertiser_id int64  `spanner:"i_advertiser_id" csv:"i_advertiser_id"`
-	i_offer_id      int64  `spanner:"i_offer_id" csv:"i_offer_id"`
-	i_suboffer_id   int64  `spanner:"i_suboffer_id" csv:"i_suboffer_id"`
+	ExecID       string `spanner:"exc_id" csv:"-"`
+	OldID        int64  `spanner:"OldID" csv:"exc_id"`
+	PlatformID   int64  `spanner:"i_platform_id" csv:"i_platform_id"`
+	AffiliateID  int64  `spanner:"i_affiliate_id" csv:"i_affiliate_id"`
+	AdvertiserID int64  `spanner:"i_advertiser_id" csv:"i_advertiser_id"`
+	OfferID      int64  `spanner:"i_offer_id" csv:"i_offer_id"`
+	SubofferID   int64  `spanner:"i_suboffer_id" csv:"i_suboffer_id"`
 }
 
 func NewGeneratedExceptionLogs(id int64) *dbExceptionLogs {
 	return &dbExceptionLogs{
-		OldID:           id,
-		i_platform_id:   rand.Int63n(10) + int64(1),
-		i_affiliate_id:  rand.Int63n(10) + int64(1),
-		i_advertiser_id: rand.Int63n(10) + int64(1),
-		i_offer_id:      rand.Int63n(10) + int64(1),
-		i_suboffer_id:   rand.Int63n(10) + int64(1),
+		OldID:        id,
+		PlatformID:   rand.Int63n(10) + int64(1),
+		AffiliateID:  rand.Int63n(10) + int64(1),
+		AdvertiserID: rand.Int63n(10) + int64(1),
+		OfferID:      rand.Int63n(10) + int64(1),
+		SubofferID:   rand.Int63n(10) + int64(1),
 	}
 }
 
