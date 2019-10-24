@@ -34,7 +34,7 @@ See root [README.md](../README.md#create-a-gce-instance-and-install-all-required
 how to create the instance.
 
 ```bash
-gcloud compute ssh til-about-cloudspanner --zone europe-west1-c
+gcloud compute ssh spanner-loader --zone europe-west1-c
 ```
 
 ### Then checkout this repository
@@ -47,21 +47,21 @@ cd 03-maximizing-data-load-throughput/version01/golang
 ### Create a Google Cloud Spanner Instance
 
 ```bash
-export CSTIL_PROJECT=`gcloud config list --format 'value(core.project)'`
-gcloud spanner instances create til-about-cloudspanner --config regional-europe-west1 --description "TIL about Cloud Spanner" --nodes 3
+export GCP_PROJECT=`gcloud config list --format 'value(core.project)'`
+gcloud spanner instances create spanner-loader --config regional-europe-west1 --description "TIL about Cloud Spanner" --nodes 3
 ```
 
 ### Build and Containerize the sample application
 
 ```bash
-docker build -t gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v1 --build-arg version=v1 .
+docker build -t gcr.io/$GCP_PROJECT/spanner-loader:v1 --build-arg version=v1 .
 ```
 
 If you build the container locally but want to run it from your GCE instance,
 push it to the project private container registry first:
 
 ```bash
-gcloud docker -- push gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v1
+gcloud docker -- push gcr.io/$GCP_PROJECT/spanner-loader:v1
 ```
 
 ### Copy and adjust the configuration file
@@ -87,25 +87,25 @@ If you run the code locally and use a service account you need to add `-v {PATH_
 First create the database and schema
 
 ```bash
-docker run --env-file config.env -it gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v1 create
+docker run --env-file config.env -it gcr.io/$GCP_PROJECT/spanner-loader:v1 create
 ```
 
 Next generate the sample data
 
 ```bash
-docker run --env-file config.env -it gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v1 generate
+docker run --env-file config.env -it gcr.io/$GCP_PROJECT/spanner-loader:v1 generate
 ```
 
 Then load the sample data
 
 ```bash
-docker run --env-file config.env -it gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v1 load
+docker run --env-file config.env -it gcr.io/$GCP_PROJECT/spanner-loader:v1 load
 ```
 
 To reset the database run
 
 ```bash
-docker run --env-file config.env -it gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v1 reset
+docker run --env-file config.env -it gcr.io/$GCP_PROJECT/spanner-loader:v1 reset
 ```
 
 ## Loading data with ordered batches of rows (distinct ranges) -- recommended
@@ -120,34 +120,34 @@ To run the improved sample follow the following steps:
 ### First ssh into your GCE instance
 
 ```bash
-gcloud compute ssh til-about-cloudspanner --zone europe-west1-c
+gcloud compute ssh spanner-loader --zone europe-west1-c
 ```
 
 ### Then checkout this repository
 
 ```bash
-git clone https://github.com/hostirosti/til-about-cloudspanner
+git clone https://github.com/hostirosti/spanner-loader
 cd 03-maximizing-data-load-throughput/version02/golang
 ```
 
 ### Create a Google Cloud Spanner Instance
 
 ```bash
-export CSTIL_PROJECT=`gcloud config list --format 'value(core.project)'`
-gcloud spanner instances create til-about-cloudspanner --config regional-europe-west1 --description "TIL about Cloud Spanner" --nodes 3
+export GCP_PROJECT=`gcloud config list --format 'value(core.project)'`
+gcloud spanner instances create spanner-loader --config regional-europe-west1 --description "TIL about Cloud Spanner" --nodes 3
 ```
 
 ### Build and Containerize the sample application
 
 ```bash
-docker build -t gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v2 --build-arg version=v2 .
+docker build -t gcr.io/$GCP_PROJECT/spanner-loader-03:v2 --build-arg version=v2 .
 ```
 
 If you build the container locally but want to run it from your GCE instance, first
 push it to the project private container registry:
 
 ```bash
-gcloud docker -- push gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v2
+gcloud docker -- push gcr.io/$GCP_PROJECT/spanner-loader-03:v2
 ```
 
 ### Copy and adjust the configuration file
@@ -173,25 +173,25 @@ If you run the code locally and use a service account you need to add `-v {PATH_
 First create the database and schema:
 
 ```bash
-docker run --env-file config.env -it gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v2 create
+docker run --env-file config.env -it gcr.io/$GCP_PROJECT/spanner-loader-03:v2 create
 ```
 
 Next generate the sample data:
 
 ```bash
-docker run --env-file config.env -it gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v2 generate
+docker run --env-file config.env -it gcr.io/$GCP_PROJECT/spanner-loader-03:v2 generate
 ```
 
 Then load the sample data:
 
 ```bash
-docker run --env-file config.env -it gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v2 load
+docker run --env-file config.env -it gcr.io/$GCP_PROJECT/spanner-loader-03:v2 load
 ```
 
 To reset the database run:
 
 ```bash
-docker run --env-file config.env -it gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v2 reset
+docker run --env-file config.env -it gcr.io/$GCP_PROJECT/spanner-loader-03:v2 reset
 ```
 
 ## Dataflow Connector Sample
@@ -209,7 +209,7 @@ of the Cloud Spanner Dataflow connector. To create a dedicated database, simply
 change the `DATABASE` value in your config.env before running
 
 ```bash
-docker run --env-file config.env -it gcr.io/$CSTIL_PROJECT/til-about-cloudspanner-03:v2 create
+docker run --env-file config.env -it gcr.io/$GCP_PROJECT/spanner-loader-03:v2 create
 ```
 
 ### Running the sample Dataflow pipeline
@@ -222,7 +222,7 @@ placeholders `PROJECT`, `BUCKET`, `BUCKET_DATA_PATH` before executing:
 ```bash
 mvn compile exec:java \
 -Dexec.mainClass="com.google.cloud.tilaboutcloudspanner.BatchImportPipeline" \
--Dexec.args="--runner=DataflowRunner --project=$CSTIL_PROJECT --gcpTempLocation=gs://{BUCKET}/tmp --region=europe-west1 --bucketDataPath={BUCKET_DATA_PATH} --experiments=shuffle_mode=service --jobName=batchimport-from-csv" -Dexec.cleanupDaemonThreads=false
+-Dexec.args="--runner=DataflowRunner --project=$GCP_PROJECT --gcpTempLocation=gs://{BUCKET}/tmp --region=europe-west1 --bucketDataPath={BUCKET_DATA_PATH} --experiments=shuffle_mode=service --jobName=batchimport-from-csv" -Dexec.cleanupDaemonThreads=false
 ```
 
 Example:

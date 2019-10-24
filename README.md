@@ -19,9 +19,9 @@ Video and Content Series.
 ### Create a GCE instance and install all required packages
 
 ```bash
-gcloud compute instances create cloud-spanner-til-01 --zone europe-west1-c --machine-type n1-highcpu-16 --scopes "https://www.googleapis.com/auth/cloud-platform" --image-project ubuntu-os-cloud --image-family ubuntu-1710
-gcloud compute scp scripts/setup.sh cloud-spanner-til-01:setup.sh --zone europe-west1-c
-gcloud compute ssh cloud-spanner-til-01 --zone europe-west1-c --command "sudo sh setup.sh"
+gcloud compute instances create spanner-loader --zone europe-west1-c --machine-type n1-highcpu-16 --scopes "https://www.googleapis.com/auth/cloud-platform" --image-project ubuntu-os-cloud --image-family ubuntu-1804-lts
+gcloud compute scp scripts/setup.sh spanner-loader:setup.sh --zone europe-west1-c
+gcloud compute ssh spanner-loader --zone europe-west1-c --command "sudo sh setup.sh"
 ```
 
 ## Developing and Testing locally
@@ -31,11 +31,11 @@ To generate one that has the permissions to connect to Google Cloud Spanner and
 write to Google Cloud Storage run the following commands:
 
 ```bash
-export CSTIL_PROJECT=`gcloud config list --format 'value(core.project)'`
-gcloud iam service-accounts create cloud-spanner-til --display-name "Cloud Spanner TIL Service Account - generated"
-gcloud iam service-accounts keys create service-account.json --iam-account cloud-spanner-til@$CSTIL_PROJECT.iam.gserviceaccount.com
-gcloud projects add-iam-policy-binding cloud-spanner-til --member serviceAccount:cloud-spanner-til@$CSTIL_PROJECT.iam.gserviceaccount.com --role roles/spanner.admin
-gcloud projects add-iam-policy-binding cloud-spanner-til --member serviceAccount:cloud-spanner-til@$CSTIL_PROJECT.iam.gserviceaccount.com --role roles/storage.objectAdmin
+export GCP_PROJECT=`gcloud config list --format 'value(core.project)'`
+gcloud iam service-accounts create spanner --display-name "Cloud Spanner TIL Service Account - generated"
+gcloud iam service-accounts keys create service-account.json --iam-account spanner@$GCP_PROJECT.iam.gserviceaccount.com
+gcloud projects add-iam-policy-binding spanner --member serviceAccount:spanner@$GCP_PROJECT.iam.gserviceaccount.com --role roles/spanner.admin
+gcloud projects add-iam-policy-binding spanner --member serviceAccount:spanner@$GCP_PROJECT.iam.gserviceaccount.com --role roles/storage.objectAdmin
 ```
 
 ## Contributing

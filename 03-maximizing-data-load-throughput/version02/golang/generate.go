@@ -22,6 +22,21 @@ import (
 	"sync"
 )
 
+func generateExceptionLogs(gcs *GCSclient, wg *sync.WaitGroup) {
+	log.Printf("Generating %v exception logs ...", *numExceptionLogs)
+	var accs []*dbExceptionLogs
+	for i := 0; i < *numExceptionLogs; i++ {
+		accs = append(accs, NewGeneratedExceptionLogs(int64(i)))
+		if len(accs)%recordsPerFile == 0 {
+			go gcs.writeCSV(wg, *bucketName, *folderPath, "exceptionlogs", i/recordsPerFile, accs)
+			accs = []*dbExceptionLogs{}
+			log.Printf("Generated %v Exception logs of %v ...", i, *numExceptionLogs)
+		}
+	}
+	go gcs.writeCSV(wg, *bucketName, *folderPath, "exceptionlogs", *numAccounts/recordsPerFile, accs)
+	log.Printf("Generated %v Accounts of %v ...", *numAccounts, *numAccounts)
+}
+
 func generateAccounts(gcs *GCSclient, wg *sync.WaitGroup) {
 	log.Printf("Generating %v accounts...", *numAccounts)
 	var accs []*dbAccount

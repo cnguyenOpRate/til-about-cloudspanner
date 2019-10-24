@@ -52,15 +52,16 @@ var (
 	scaleInit   = flag.Int("scaleInit", 1, "for scaleout, start with n-th file")
 	scaleOffset = flag.Int("scaleOffset", 1, "for scaleout, process every n-th file")
 
-	numAccounts   = flag.Int("accounts", 10000, "Number of accounts to generate / load.")
-	numOrders     = flag.Int("orders", 100000, "Number of orders to generate / load.")
-	numProducts   = flag.Int("products", 100, "Number of products to generate / load.")
-	numWarehouses = flag.Int("warehouses", 10, "Number of warehouses to generate / load.")
-	infoDataSize  = flag.Int("infoDataSize", 1000, "Bytes of random data to add per product")
-	schemaFile    = flag.String("schema", "schema.sql", "Path to schema file for 'create' command")
-	batchSize     = flag.Int("batchSize", 1, "Max number of mutations to send in one Cloud Spanner request.")
-	parallelTxn   = flag.Int("parallelTxn", 10, "Max number of parallel to Cloud Spanner transactions.")
-	timeout       = flag.Int("timeout", 5, "Timeout value (in seconds) for inserts.")
+	numExceptionLogs = flag.Int("exceptionlogs", 10000, "Number of exception logs to generate / load.")
+	numAccounts      = flag.Int("accounts", 10000, "Number of accounts to generate / load.")
+	numOrders        = flag.Int("orders", 100000, "Number of orders to generate / load.")
+	numProducts      = flag.Int("products", 100, "Number of products to generate / load.")
+	numWarehouses    = flag.Int("warehouses", 10, "Number of warehouses to generate / load.")
+	infoDataSize     = flag.Int("infoDataSize", 1000, "Bytes of random data to add per product")
+	schemaFile       = flag.String("schema", "schema.sql", "Path to schema file for 'create' command")
+	batchSize        = flag.Int("batchSize", 1, "Max number of mutations to send in one Cloud Spanner request.")
+	parallelTxn      = flag.Int("parallelTxn", 10, "Max number of parallel to Cloud Spanner transactions.")
+	timeout          = flag.Int("timeout", 5, "Timeout value (in seconds) for inserts.")
 
 	recordsPerFile = 100000
 
@@ -110,6 +111,7 @@ func main() {
 			log.Fatalf("Couldn't connect to Google Cloud Storage: %v", err)
 		}
 		wg := &sync.WaitGroup{}
+		generateExceptionLogs(gcs, wg)
 		generateAccounts(gcs, wg)
 		generateWarehouses(gcs, wg)
 		generateProducts(gcs, wg)
@@ -219,13 +221,14 @@ func persist(gcs *GCSclient, cssvc *CloudSpannerService, files []string) error {
 	}
 
 	lookup := map[string]map[int64]*uuid.UUID{
-		"accounts":   make(map[int64]*uuid.UUID),
-		"products":   make(map[int64]*uuid.UUID),
-		"warehouses": make(map[int64]*uuid.UUID),
+		"exceptionlogs": make(map[int64]*uuid.UUID),
+		"accounts":      make(map[int64]*uuid.UUID),
+		"products":      make(map[int64]*uuid.UUID),
+		"warehouses":    make(map[int64]*uuid.UUID),
 	}
 
 	wgs := make(map[string]*sync.WaitGroup)
-	for _, g := range []string{"Account", "Warehouse", "Product", "Order"} {
+	for _, g := range []string{"ExceptionLogs", "Account", "Warehouse", "Product", "Order"} {
 		wgs[g] = &sync.WaitGroup{}
 		err := persistObjects(wgs, g, readersCh, files, lookup)
 		if err != nil {
@@ -245,6 +248,33 @@ func persist(gcs *GCSclient, cssvc *CloudSpannerService, files []string) error {
 
 func persistObjects(wgs map[string]*sync.WaitGroup, group string, readersCh chan<- *processJob, files []string, lookup map[string]map[int64]*uuid.UUID) error {
 	switch group {
+	case "ExceptionLogs":
+		// persist ExceptionLogs
+		for _, f := range filterStrings(files,
+			func(s string) bool { return strings.Contains(s, "exceptionlogs-") }) {
+			wgs[group].Add(1)
+			readersCh <- &processJob{
+				files: map[string][]byte{
+					f: nil,
+				},
+				mapping: map[string]string{
+					"exceptionlogs": f,
+				},
+				lookup: lookup,
+				processFunction: func(j *processJob, chs []chan map[string]*spanner.Mutation) error {
+					gocsv.UnmarshalBytesToCallback(j.files[j.mapping["exceptionlogs"]], func(a *dbExceptionLogs) error {
+						id := uuid.New()
+						a.exc_id = string(encodeHexUUID(&id))
+						j.lookup["exceptionlogs"][a.OldID] = &id
+						return appendMutation(chs[0], "ExceptionLogs", a.exc_id, a)
+					})
+					j.wgs["ExceptionLogs"].Done()
+					return nil
+				},
+				wgs: wgs,
+			}
+		}
+		break
 	case "Account":
 		// persist Accounts
 		for _, f := range filterStrings(files,

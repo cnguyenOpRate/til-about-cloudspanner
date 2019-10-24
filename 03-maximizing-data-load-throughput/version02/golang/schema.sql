@@ -14,70 +14,90 @@
 
 -- Schema version 2 using STRING(32) primary keys used for Hex encoded UUIDs v4;
 
-CREATE TABLE Account (
-    AccountID       STRING(32) NOT NULL,
-    OldID           INT64 NOT NULL,
-    Name            STRING(256) NOT NULL,
-    EMail           STRING(256) NOT NULL,
-    CountryCode     STRING(2) NOT NULL
-) PRIMARY KEY (AccountID);
+CREATE TABLE tbl_mc_exceptions (
 
-CREATE TABLE `Order` (
-    OrderID         STRING(32) NOT NULL,
-    OldID           INT64 NOT NULL,
-    AccountID       STRING(32) NOT NULL,
-    OrderDate       TIMESTAMP NOT NULL,
-    Status          STRING(256) NOT NULL,
-    DeliveryDate    TIMESTAMP
-) PRIMARY KEY (OrderID);
+    exc_id STRING(32) NOT NULL,
 
-CREATE TABLE OrderLineItem (
-    OrderID         STRING(32) NOT NULL,
-    ProductID       STRING(32) NOT NULL,
-    Quantity        INT64 NOT NULL,
-    Discount        INT64
-) PRIMARY KEY (OrderID, ProductID);
+    i_platform_id INT64,
 
-CREATE TABLE Payment (
-    OrderID         STRING(32) NOT NULL,
-    PaymentID       STRING(32) NOT NULL,
-    Form            STRING(32) NOT NULL,
-    Status          STRING(128) NOT NULL,
-    Value           FLOAT64 NOT NULL,
-    Currency        STRING(3) NOT NULL,
-    UpdateDate      TIMESTAMP NOT NULL
-) PRIMARY KEY (OrderID, PaymentID);
+    i_affiliate_id INT64,
+    i_advertiser_id INT64,
+    i_offer_id INT64,
+    i_suboffer_id INT64,
 
-CREATE TABLE Product (
-    ProductID       STRING(32) NOT NULL,
-    OldID           INT64 NOT NULL,
-    Name            STRING(256) NOT NULL,
-) PRIMARY KEY (ProductID);
+    dtu_exc_timestamp TIMESTAMP,
+    dt_exc_datetime TIMESTAMP,
+    i_exc_year INT64,
+    i_exc_month INT64,
+    d_exc_date DATE,
+    i_exc_hour INT64,
 
-CREATE TABLE ProductPrice (
-    ProductID       STRING(32) NOT NULL,
-    CountryCode     STRING(2) NOT NULL,
-    Currency        STRING(3) NOT NULL,
-    Price           FLOAT64 NOT NULL,
-    ValidFromDate   TIMESTAMP NOT NULL
-) PRIMARY KEY (ProductID, CountryCode, ValidFromDate);
+    s_exc_error_code STRING(64),
+    s_exc_uri STRING(512),
 
-CREATE TABLE ProductInfo (
-    ProductID       STRING(32) NOT NULL,
-    UpdateDate      TIMESTAMP NOT NULL,
-    Data            BYTES(MAX)
-) PRIMARY KEY (ProductID, UpdateDate);
+    s_exc_device_os STRING(8),
+    s_exc_device_type STRING(8),
+    s_exc_device_version STRING(8),
+    s_exc_country_code STRING(2),
+    s_exc_isp STRING(64),
+    s_exc_ip STRING(40),
+    s_exc_user_agent STRING(128),
+    s_exc_referrer_host STRING(64),
 
-CREATE TABLE ProductStock (
-    ProductID       STRING(32) NOT NULL,
-    LocationID      STRING(32) NOT NULL,
-    Quantity        INT64 NOT NULL,
-    UpdateDate      TIMESTAMP NOT NULL
-) PRIMARY KEY (ProductID, LocationID, UpdateDate);
+    s_exc_token_clickid STRING(128),
+    s_exc_token_networkid STRING(128),
+    s_exc_token_campaignid STRING(128),
+    s_exc_token_creativeid STRING(128),
+    s_exc_token_publisherid STRING(128),
+    s_exc_token_siteid STRING(128),
+    s_exc_token_category STRING(128),
+    s_exc_token_keywords STRING(128),
+    s_exc_token_androidid STRING(128),
+    s_exc_token_iosidfa STRING(128),
+    s_exc_token_000 STRING(128),
+    s_exc_token_001 STRING(128),
+    s_exc_token_002 STRING(128),
+    s_exc_token_003 STRING(128),
+    s_exc_token_004 STRING(128),
 
-CREATE TABLE Warehouse (
-    LocationID      STRING(32) NOT NULL,
-    OldID           INT64 NOT NULL,
-    CountryCode     STRING(2) NOT NULL,
-    Name            STRING(256) NOT NULL
-) PRIMARY KEY (LocationID);
+    dtu_timestamp TIMESTAMP,
+
+    i_exc_week INT64,
+
+    b_exc_responsive BOOL,
+    i_exc_depth INT64,
+    s_exc_action STRING(64),
+
+    s_exc_region STRING(64),
+    s_exc_city STRING(64),
+    s_exc_connection_type STRING(8),
+
+    i_soredirect_id INT64,
+
+    i_exc_weekday INT64,
+
+    i_exc_antiredirect_id INT64,
+
+    s_request_type STRING(3),
+
+    s_exc_token_005 STRING(128),
+    s_exc_token_006 STRING(128),
+    s_exc_token_007 STRING(128),
+
+    s_exc_token_lclickid STRING(256),
+
+    s_exc_linkid STRING(32),
+
+    i_exc_action_redirect_offer_id INT64,
+    i_exc_action_path_0_offer_id INT64,
+    i_exc_action_path_1_offer_id INT64,
+    i_exc_action_path_2_offer_id INT64,
+
+    i_root_offer_id INT64,
+
+    s_exc_token_creativename STRING(128),
+    s_exc_token_appname STRING(128),
+    s_exc_token_appid STRING(128),
+    s_exc_token_appcategory STRING(128)
+
+) PRIMARY KEY (exc_id);
