@@ -25,6 +25,7 @@ import (
 func generateExceptionLogs(gcs *GCSclient, wg *sync.WaitGroup) {
 	log.Printf("Generating %v exception logs ...", *numExceptionLogs)
 	var accs []*dbExceptionLogs
+	var recordsPerFile = *numRecordsPerFile
 	for i := 0; i < *numExceptionLogs; i++ {
 		accs = append(accs, NewGeneratedExceptionLogs(int64(i)))
 		if len(accs)%recordsPerFile == 0 {
@@ -40,6 +41,7 @@ func generateExceptionLogs(gcs *GCSclient, wg *sync.WaitGroup) {
 func generateAccounts(gcs *GCSclient, wg *sync.WaitGroup) {
 	log.Printf("Generating %v accounts...", *numAccounts)
 	var accs []*dbAccount
+	var recordsPerFile = *numRecordsPerFile
 	for i := 0; i < *numAccounts; i++ {
 		accs = append(accs, NewGeneratedAccount(int64(i)))
 		if len(accs)%recordsPerFile == 0 {
@@ -54,6 +56,7 @@ func generateAccounts(gcs *GCSclient, wg *sync.WaitGroup) {
 
 func generateOrders(gcs *GCSclient, wg *sync.WaitGroup) {
 	log.Printf("Generating %v orders, order lineitems and payments...", *numOrders)
+	var recordsPerFile = *numRecordsPerFile
 	var os []*dbOrder
 	var ols []*dbOrderLineItem
 	var ps []*dbPayment
@@ -92,6 +95,7 @@ func generateOrders(gcs *GCSclient, wg *sync.WaitGroup) {
 
 func generateProducts(gcs *GCSclient, wg *sync.WaitGroup) {
 	log.Printf("Generating %v products...", *numProducts)
+	var recordsPerFile = *numRecordsPerFile
 	var ps []*dbProduct
 	var pis []*dbProductInfo
 	var pps []*dbProductPrice
@@ -140,6 +144,7 @@ func generateProducts(gcs *GCSclient, wg *sync.WaitGroup) {
 
 func generateWarehouses(gcs *GCSclient, wg *sync.WaitGroup) {
 	log.Printf("Generating %v warehouses...", *numWarehouses)
+	var recordsPerFile = *numRecordsPerFile
 	var whs []*dbWarehouse
 	for i := 0; i < *numWarehouses; i++ {
 		wh := NewGeneratedWarehouse(int64(i))

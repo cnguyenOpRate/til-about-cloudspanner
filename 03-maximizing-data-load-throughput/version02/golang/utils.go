@@ -74,21 +74,21 @@ type debugging bool
 
 // debugging log
 func (d debugging) Printf(format string, args ...interface{}) {
-	if d {
-		log.Printf(format, args...)
-	}
+	//if d {
+	log.Printf(format, args...)
+	//}
 }
 
 func (d debugging) Print(args ...interface{}) {
-	if d {
-		log.Print(args...)
-	}
+	//if d {
+	log.Print(args...)
+	//}
 }
 
 func (d debugging) Println(args ...interface{}) {
-	if d {
-		log.Println(args...)
-	}
+	//if d {
+	log.Println(args...)
+	//}
 }
 
 // taken from https://stackoverflow.com/questions/43495745/how-to-generate-random-date-in-go-lang

@@ -49,7 +49,7 @@ func NewGCSService(svcAccJSON string, scopes ...string) (*GCSclient, error) {
 	}
 
 	opts = append(opts, option.WithScopes(scopes...))
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 600*time.Second)
 	defer cancel()
 	c, err := storage.NewClient(ctx, opts...)
 

@@ -63,7 +63,8 @@ var (
 	parallelTxn      = flag.Int("parallelTxn", 10, "Max number of parallel to Cloud Spanner transactions.")
 	timeout          = flag.Int("timeout", 5, "Timeout value (in seconds) for inserts.")
 
-	recordsPerFile = 100000
+	numRecordsPerFile  = flag.Int("recordsPerFile", 1000, "Maximum records per file")
+	numConcurrentFiles = flag.Int("concurrentFiles", 10, "Maximum concurrent files to run in parallel")
 
 	debugLog debugging
 )
@@ -112,11 +113,11 @@ func main() {
 		}
 		wg := &sync.WaitGroup{}
 		generateExceptionLogs(gcs, wg)
-		generateAccounts(gcs, wg)
-		generateWarehouses(gcs, wg)
-		generateProducts(gcs, wg)
-		generateOrders(gcs, wg)
-		debugLog.Println("Waiting for write to GCS to finish....")
+		//generateAccounts(gcs, wg)
+		//generateWarehouses(gcs, wg)
+		//generateProducts(gcs, wg)
+		//generateOrders(gcs, wg)
+		log.Println("Waiting for write to GCS to finish....")
 		wg.Wait()
 		break
 
@@ -188,7 +189,7 @@ func persist(gcs *GCSclient, cssvc *CloudSpannerService, files []string) error {
 	// with channels (for scalability), buffer size 20k Mutations per channel
 	// This needs to be increased if runnning against more than 5 nodes instance
 	chs := []chan map[string]*spanner.Mutation{}
-	for i := 0; i < 4; i++ {
+	for i := 0; i < 3; i++ { //because 3 nodes
 		chs = append(chs, make(chan map[string]*spanner.Mutation, 20000))
 	}
 
@@ -212,23 +213,25 @@ func persist(gcs *GCSclient, cssvc *CloudSpannerService, files []string) error {
 		os.Exit(1)
 	}()
 
-	readersCh := make(chan *processJob, 10)
-	processorsCh := make(chan *processJob, 10)
+	numConcurrentFiles := *numConcurrentFiles
+	readersCh := make(chan *processJob, numConcurrentFiles)
+	processorsCh := make(chan *processJob, numConcurrentFiles)
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < numConcurrentFiles; i++ {
 		go readWorker(i, gcs, readersCh, processorsCh)
 		go processWorker(i, processorsCh, chs)
 	}
 
 	lookup := map[string]map[int64]*uuid.UUID{
-		"exceptionlogs": make(map[int64]*uuid.UUID),
+		"exceptionlogs": make(map[int64]*uuid.UUID), // add new table id for bidmotion
 		"accounts":      make(map[int64]*uuid.UUID),
 		"products":      make(map[int64]*uuid.UUID),
 		"warehouses":    make(map[int64]*uuid.UUID),
 	}
 
 	wgs := make(map[string]*sync.WaitGroup)
-	for _, g := range []string{"ExceptionLogs", "Account", "Warehouse", "Product", "Order"} {
+	//for _, g := range []string{"Account", "Warehouse", "Product", "Order"} {
+	for _, g := range []string{"tbl_mc_exceptions"} { // add new table for bidmotion
 		wgs[g] = &sync.WaitGroup{}
 		err := persistObjects(wgs, g, readersCh, files, lookup)
 		if err != nil {
@@ -248,7 +251,7 @@ func persist(gcs *GCSclient, cssvc *CloudSpannerService, files []string) error {
 
 func persistObjects(wgs map[string]*sync.WaitGroup, group string, readersCh chan<- *processJob, files []string, lookup map[string]map[int64]*uuid.UUID) error {
 	switch group {
-	case "ExceptionLogs":
+	case "tbl_mc_exceptions":
 		// persist ExceptionLogs
 		for _, f := range filterStrings(files,
 			func(s string) bool { return strings.Contains(s, "exceptionlogs-") }) {
@@ -266,9 +269,9 @@ func persistObjects(wgs map[string]*sync.WaitGroup, group string, readersCh chan
 						id := uuid.New()
 						a.ExecID = string(encodeHexUUID(&id))
 						j.lookup["exceptionlogs"][a.OldID] = &id
-						return appendMutation(chs[0], "ExceptionLogs", a.ExecID, a)
+						return appendMutation(chs[0], "tbl_mc_exceptions", a.ExecID, a)
 					})
-					j.wgs["ExceptionLogs"].Done()
+					j.wgs["exceptionlogs"].Done()
 					return nil
 				},
 				wgs: wgs,

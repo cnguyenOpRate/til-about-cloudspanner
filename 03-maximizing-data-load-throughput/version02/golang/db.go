@@ -79,23 +79,152 @@ func (b *blobField) UnmarshalCSV(csv string) (err error) {
 }
 
 type dbExceptionLogs struct {
-	ExecID       string `spanner:"exc_id" csv:"-"`
-	OldID        int64  `spanner:"OldID" csv:"exc_id"`
-	PlatformID   int64  `spanner:"i_platform_id" csv:"i_platform_id"`
-	AffiliateID  int64  `spanner:"i_affiliate_id" csv:"i_affiliate_id"`
-	AdvertiserID int64  `spanner:"i_advertiser_id" csv:"i_advertiser_id"`
-	OfferID      int64  `spanner:"i_offer_id" csv:"i_offer_id"`
-	SubofferID   int64  `spanner:"i_suboffer_id" csv:"i_suboffer_id"`
+	ExecID          string    `spanner:"exc_id" csv:"-"`
+	OldID           int64     `spanner:"OldID" csv:"exc_id"`
+	PlatformID      int64     `spanner:"i_platform_id" csv:"i_platform_id"`
+	AffiliateID     int64     `spanner:"i_affiliate_id" csv:"i_affiliate_id"`
+	AdvertiserID    int64     `spanner:"i_advertiser_id" csv:"i_advertiser_id"`
+	OfferID         int64     `spanner:"i_offer_id" csv:"i_offer_id"`
+	SubofferID      int64     `spanner:"i_suboffer_id" csv:"i_suboffer_id"`
+	DtuExcTimestamp time.Time `spanner:"dtu_exc_timestamp" csv:"dtu_exc_timestamp"`
+	DtExcDatetime   time.Time `spanner:"dt_exc_datetime" csv:"dt_exc_datetime"`
+
+	IExcYear  int64     `spanner:"i_exc_year" csv:"i_exc_year"`
+	IExcMonth int64     `spanner:"i_exc_month" csv:"i_exc_month"`
+	DExcDate  time.Time `spanner:"d_exc_date" csv:"d_exc_date"`
+
+	IExcHour          int64  `spanner:"i_exc_hour" csv:"i_exc_hour"`
+	SExcErrorCode     string `spanner:"s_exc_error_code" csv:"s_exc_error_code"`
+	SExcURI           string `spanner:"s_exc_uri" csv:"s_exc_uri"`
+	SExcDeviceOs      string `spanner:"s_exc_device_os" csv:"s_exc_device_os"`
+	SExcDeviceType    string `spanner:"s_exc_device_type" csv:"s_exc_device_type"`
+	SExcDeviceVersion string `spanner:"s_exc_device_version" csv:"s_exc_device_version"`
+	SExcCountryCode   string `spanner:"s_exc_country_code" csv:"s_exc_country_code"`
+	SExcIsp           string `spanner:"s_exc_isp" csv:"s_exc_isp"`
+	SExcIP            string `spanner:"s_exc_ip" csv:"s_exc_ip"`
+	SExcUserAgent     string `spanner:"s_exc_user_agent" csv:"s_exc_user_agent"`
+	SExcReferrerHost  string `spanner:"s_exc_referrer_host" csv:"s_exc_referrer_host"`
+
+	SExcTokenClickid     string    `spanner:"s_exc_token_clickid" csv:"s_exc_token_clickid"`
+	SExcTokenNetworkid   string    `spanner:"s_exc_token_networkid" csv:"s_exc_token_networkid"`
+	SExcTokenCampaignid  string    `spanner:"s_exc_token_campaignid" csv:"s_exc_token_campaignid"`
+	SExcTokenCreativeid  string    `spanner:"s_exc_token_creativeid" csv:"s_exc_token_creativeid"`
+	SExcTokenPublisherid string    `spanner:"s_exc_token_publisherid" csv:"s_exc_token_publisherid"`
+	SExcTokenSiteid      string    `spanner:"s_exc_token_siteid" csv:"s_exc_token_siteid"`
+	SExcTokenCategory    string    `spanner:"s_exc_token_category" csv:"s_exc_token_category"`
+	SExcTokenKeywords    string    `spanner:"s_exc_token_keywords" csv:"s_exc_token_keywords"`
+	SExcTokenAndroidid   string    `spanner:"s_exc_token_androidid" csv:"s_exc_token_androidid"`
+	SExcTokenIosidfa     string    `spanner:"s_exc_token_iosidfa" csv:"s_exc_token_iosidfa"`
+	SExcToken000         string    `spanner:"s_exc_token_000" csv:"s_exc_token_000"`
+	SExcToken001         string    `spanner:"s_exc_token_001" csv:"s_exc_token_001"`
+	SExcToken002         string    `spanner:"s_exc_token_002" csv:"s_exc_token_002"`
+	SExcToken003         string    `spanner:"s_exc_token_003" csv:"s_exc_token_003"`
+	SExcToken004         string    `spanner:"s_exc_token_004" csv:"s_exc_token_004"`
+	SExcToken005         string    `spanner:"s_exc_token_005" csv:"s_exc_token_005"`
+	SExcToken006         string    `spanner:"s_exc_token_006" csv:"s_exc_token_006"`
+	SExcotken007         string    `spanner:"s_exc_token_007" csv:"s_exc_token_007"`
+	DtuTimestamp         time.Time `spanner:"dtu_timestamp" csv:"dtu_timestamp"`
+
+	IExcWeek   int64  `spanner:"i_exc_week" csv:"d_exi_exc_weekc_date"`
+	IExcDepth  int64  `spanner:"i_exc_depth" csv:"i_exc_depth"`
+	SExcAction string `spanner:"s_exc_action" csv:"s_exc_action"`
+
+	SExcRegion         string `spanner:"s_exc_region" csv:"s_exc_region"`
+	SExcCity           string `spanner:"s_exc_city" csv:"s_exc_city"`
+	SExcConnectionType string `spanner:"s_exc_connection_type" csv:"s_exc_connection_type"`
+	ISoredirectID      int64  `spanner:"i_soredirect_id" csv:"i_soredirect_id"`
+	IExcWeekday        int64  `spanner:"i_exc_weekday" csv:"i_exc_weekday"`
+	IExcAntiredirectID int64  `spanner:"i_exc_antiredirect_id" csv:"i_exc_antiredirect_id"`
+	SRequestType       string `spanner:"s_request_type" csv:"s_request_type"`
+
+	SExcTokenLclickid string `spanner:"s_exc_token_lclickid" csv:"s_exc_token_lclickid"`
+	SExcLinkid        string `spanner:"s_exc_linkid" csv:"s_exc_linkid"`
+
+	IExcActionRedirectOfferID int64 `spanner:"i_exc_action_redirect_offer_id" csv:"i_exc_action_redirect_offer_id"`
+	IExcActionPath0OfferID    int64 `spanner:"i_exc_action_path_0_offer_id" csv:"i_exc_action_path_0_offer_id"`
+	IExcActionPath1OfferID    int64 `spanner:"i_exc_action_path_1_offer_id" csv:"i_exc_action_path_1_offer_id"`
+	IExcActionPath2OfferID    int64 `spanner:"i_exc_action_path_2_offer_id" csv:"i_exc_action_path_2_offer_id"`
+	IRootOfferID              int64 `spanner:"i_root_offer_id" csv:"i_root_offer_id"`
+
+	SExcTokenCreativename string `spanner:"s_exc_token_creativename" csv:"s_exc_token_creativename"`
+	SExcTokenAppname      string `spanner:"s_exc_token_appname" csv:"s_exc_token_appname"`
+	SExcTokenAppid        string `spanner:"s_exc_token_appid" csv:"s_exc_token_appid"`
+	SExcTokenAppcategory  string `spanner:"s_exc_token_appcategory" csv:"s_exc_token_appcategory"`
 }
 
 func NewGeneratedExceptionLogs(id int64) *dbExceptionLogs {
 	return &dbExceptionLogs{
-		OldID:        id,
-		PlatformID:   rand.Int63n(10) + int64(1),
-		AffiliateID:  rand.Int63n(10) + int64(1),
-		AdvertiserID: rand.Int63n(10) + int64(1),
-		OfferID:      rand.Int63n(10) + int64(1),
-		SubofferID:   rand.Int63n(10) + int64(1),
+		OldID:           id,
+		PlatformID:      rand.Int63n(10) + int64(1),
+		AffiliateID:     rand.Int63n(10) + int64(1),
+		AdvertiserID:    rand.Int63n(10) + int64(1),
+		OfferID:         rand.Int63n(10) + int64(1),
+		SubofferID:      rand.Int63n(10) + int64(1),
+		DtuExcTimestamp: randomDate(),
+		DtExcDatetime:   randomDate(),
+
+		IExcYear:  2019,
+		IExcMonth: rand.Int63n(12) + int64(1),
+		DExcDate:  randomDate(),
+
+		IExcHour:          rand.Int63n(22) + int64(1),
+		SExcErrorCode:     fake.Zip(),
+		SExcURI:           fake.Product(),
+		SExcDeviceOs:      fake.Product(),
+		SExcDeviceType:    fake.Product(),
+		SExcDeviceVersion: fake.Product(),
+		SExcCountryCode:   fake.Zip(),
+		SExcIsp:           fake.Product(),
+		SExcIP:            fake.Product(),
+		SExcUserAgent:     fake.Product(),
+		SExcReferrerHost:  fake.Product(),
+
+		SExcTokenClickid:     fake.Password(6, 128, true, true, false),
+		SExcTokenNetworkid:   fake.Password(6, 128, true, true, false),
+		SExcTokenCampaignid:  fake.Password(6, 128, true, true, false),
+		SExcTokenCreativeid:  fake.Password(6, 128, true, true, false),
+		SExcTokenPublisherid: fake.Password(6, 128, true, true, false),
+		SExcTokenSiteid:      fake.Password(6, 128, true, true, false),
+		SExcTokenCategory:    fake.Password(6, 128, true, true, false),
+		SExcTokenKeywords:    fake.Password(6, 128, true, true, false),
+		SExcTokenAndroidid:   fake.Password(6, 128, true, true, false),
+		SExcTokenIosidfa:     fake.Password(6, 128, true, true, false),
+		SExcToken000:         fake.Password(6, 128, true, true, false),
+		SExcToken001:         fake.Password(6, 128, true, true, false),
+		SExcToken002:         fake.Password(6, 128, true, true, false),
+		SExcToken003:         fake.Password(6, 128, true, true, false),
+		SExcToken004:         fake.Password(6, 128, true, true, false),
+		SExcToken005:         fake.Password(6, 128, true, true, false),
+		SExcToken006:         fake.Password(6, 128, true, true, false),
+		SExcotken007:         fake.Password(6, 128, true, true, false),
+		DtuTimestamp:         randomDate(),
+
+		IExcWeek:   rand.Int63n(52) + int64(1),
+		IExcDepth:  rand.Int63n(52) + int64(1),
+		SExcAction: fake.Password(6, 64, true, true, false),
+
+		SExcRegion:         fake.Country(),
+		SExcCity:           fake.Country(),
+		SExcConnectionType: fake.Product(),
+
+		ISoredirectID:      rand.Int63n(52) + int64(1),
+		IExcWeekday:        rand.Int63n(52) + int64(1),
+		IExcAntiredirectID: rand.Int63n(52) + int64(1),
+		SRequestType:       fake.Password(1, 3, true, true, false),
+
+		SExcTokenLclickid: fake.Password(6, 128, true, true, false),
+		SExcLinkid:        fake.Password(6, 128, true, true, false),
+
+		IExcActionRedirectOfferID: rand.Int63n(10) + int64(1),
+		IExcActionPath0OfferID:    rand.Int63n(10) + int64(1),
+		IExcActionPath1OfferID:    rand.Int63n(10) + int64(1),
+		IExcActionPath2OfferID:    rand.Int63n(10) + int64(1),
+		IRootOfferID:              rand.Int63n(10) + int64(1),
+
+		SExcTokenCreativename: fake.Password(6, 128, true, true, false),
+		SExcTokenAppname:      fake.Password(6, 128, true, true, false),
+		SExcTokenAppid:        fake.Password(6, 128, true, true, false),
+		SExcTokenAppcategory:  fake.Password(6, 128, true, true, false),
 	}
 }
 

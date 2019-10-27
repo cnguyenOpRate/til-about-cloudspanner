@@ -30,7 +30,7 @@ CREATE TABLE tbl_mc_exceptions (
     dt_exc_datetime TIMESTAMP,
     i_exc_year INT64,
     i_exc_month INT64,
-    d_exc_date DATE,
+    d_exc_date TIMESTAMP,
     i_exc_hour INT64,
 
     s_exc_error_code STRING(64),
